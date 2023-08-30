@@ -17,16 +17,13 @@ let backgroundMusic = new Audio("./assets/bgm.mp3");
 backgroundMusic.play();
 backgroundMusic.loop = true;
 
-gameBody.onclick = function () {
-  let shotgunMusic = new Audio("./assets/shotgun.wav");
-  shotgunMusic.pause();
-  shotgunMusic.currentTime = 0;
-  shotgunMusic.play();
-};
-
 gameBody.onclick = function (event) {
   if (event.target.classList.contains("zombie-image")) {
+    let shotgunMusic = new Audio("./assets/shotgun.wav");
     let zombie = event.target;
+    shotgunMusic.pause();
+    shotgunMusic.currentTime = 0;
+    shotgunMusic.play();
     destroyZombie(zombie);
   }
 };
