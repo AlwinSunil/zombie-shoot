@@ -1,19 +1,81 @@
-// Iteration 1: Declare variables required for this game
+// Variables
+let timerElem = document.getElementById("timer");
+let livesElem = document.getElementById("max-lives");
+let gameBody = document.getElementById("game-body");
+let lives = 4;
+let time = 60;
+let zombie;
+let zombieId = 0;
 
-// Iteration 1.2: Add shotgun sound
+// Generate random number
+function generateRandomNum(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
 
-// Iteration 1.3: Add background sound
+// Audio functionality
+let backgroundMusic = new Audio("./assets/bgm.mp3");
+backgroundMusic.play();
+backgroundMusic.loop = true;
 
-// Iteration 1.4: Add lives
+gameBody.onclick = function () {
+  let shotgunMusic = new Audio("./assets/shotgun.wav");
+  shotgunMusic.pause();
+  shotgunMusic.currentTime = 0;
+  shotgunMusic.play();
+};
 
-// Iteration 2: Write a function to make a zombie
+function generateZombies() {
+  let num = generateRandomNum(1, 7);
 
-// Iteration 3: Write a function to check if the player missed a zombie
+  zombie = document.createElement("img");
+  zombie.src = `./assets/zombie-${num}.png`;
+  zombie.className = "zombie-image";
+  zombie.id = `zombie${zombieId}`;
 
-// Iteration 4: Write a function to destroy a zombie when it is shot or missed
+  zombie.onclick = () => destroyZombie(zombie);
 
-// Iteration 5: Creating timer
+  let second = generateRandomNum(2, 6);
+  zombie.style.animationDuration = `${second}s`;
 
-// Iteration 6: Write a code to start the game by calling the first zombie
+  let viewwidth = generateRandomNum(20, 80);
+  zombie.style.transform = `translateX(${viewwidth}vw)`;
 
-// Iteration 7: Write the helper function to get random integer
+  gameBody.appendChild(zombie);
+
+  zombieId++;
+}
+
+generateZombies();
+
+function destroyZombie(zombie) {
+  zombie.remove();
+}
+
+function zombieEscape(zombie) {
+  if (zombie.getBoundingClientRect().top <= 0) {
+    lives--;
+    let remainingLife = lives * ((window.innerWidth * 25) / 100);
+    livesElem.style.width = `${remainingLife}px`;
+    if (lives <= 0) {
+      clearInterval(timerInterval);
+      location.href = "./game-over.html";
+    } else {
+      destroyZombie(zombie);
+      generateZombies();
+    }
+  }
+}
+
+let timerInterval = setInterval(timer, 1000);
+
+function timer() {
+  if (time < 0) {
+    clearInterval(timerInterval);
+    location.href = "./win.html";
+  } else {
+    time--;
+    timerElem.innerText = `${time}`;
+  }
+}
+
+setInterval(() => zombieEscape(zombie), 50);
