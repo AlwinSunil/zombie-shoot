@@ -24,6 +24,13 @@ gameBody.onclick = function () {
   shotgunMusic.play();
 };
 
+gameBody.onclick = function (event) {
+  if (event.target.classList.contains("zombie-image")) {
+    let zombie = event.target;
+    destroyZombie(zombie);
+  }
+};
+
 function generateZombies() {
   let num = generateRandomNum(1, 7);
 
@@ -31,8 +38,6 @@ function generateZombies() {
   zombie.src = `./assets/zombie-${num}.png`;
   zombie.className = "zombie-image";
   zombie.id = `zombie${zombieId}`;
-
-  zombie.onclick = () => destroyZombie(zombie);
 
   let second = generateRandomNum(2, 6);
   zombie.style.animationDuration = `${second}s`;
@@ -49,33 +54,27 @@ generateZombies();
 
 function destroyZombie(zombie) {
   zombie.remove();
-}
-
-function zombieEscape(zombie) {
-  if (zombie.getBoundingClientRect().top <= 0) {
-    lives--;
-    let remainingLife = lives * ((window.innerWidth * 25) / 100);
-    livesElem.style.width = `${remainingLife}px`;
-    if (lives <= 0) {
-      clearInterval(timerInterval);
-      location.href = "./game-over.html";
-    } else {
-      destroyZombie(zombie);
-      generateZombies();
-    }
-  }
+  generateZombies();
 }
 
 let timerInterval = setInterval(timer, 1000);
 
 function timer() {
-  if (time < 0) {
+  if (time <= 0) {
     clearInterval(timerInterval);
     location.href = "./win.html";
   } else {
     time--;
     timerElem.innerText = `${time}`;
+    if (zombie.getBoundingClientRect().top < 0) {
+      lives--;
+      let remainingLife = lives * ((window.innerWidth * 25) / 100);
+      livesElem.style.width = `${remainingLife}px`;
+      destroyZombie(zombie);
+      if (lives <= 0) {
+        clearInterval(timerInterval);
+        location.href = "./game-over.html";
+      }
+    }
   }
 }
-
-setInterval(() => zombieEscape(zombie), 50);
